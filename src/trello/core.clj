@@ -76,9 +76,11 @@
   "Given a result map, filter out the key specified.
    Utility function for inspecting collections"
   [key, results]
-  (if (map? results)
+  (let [collection (if (map? results)
     (vector (get results key))
-    (map #(get % key) results)))
+    (map #(get % key) results))]
+    (doseq [item collection]
+      (prn item))))
   
 ;;; Board API
 
