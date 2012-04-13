@@ -55,7 +55,7 @@
     (prn "Please set your auth key and token before making a request")
     (try
       (make-api-request method q [auth-key auth-token])
-      (catch Exception e e))))
+    (catch Exception e e))))
 
 ;;; General Requests 
 
@@ -75,7 +75,7 @@
   (api-request :get "members/my/organizations"))
 
 (defn filter-by-param
-  "Given a result map filter out the key specified
+  "Given a result map, filter out the key specified.
    Utility function for inspecting collections"
   [key, results]
   (if (map? results)
