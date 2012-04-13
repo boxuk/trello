@@ -60,7 +60,7 @@
       (make-api-request method q [auth-key auth-token])
     (catch Exception e
       (if (boolean (re-find #"404" (.getMessage e)))
-        (prn "404. Url not found")
+        (prn (format "404. Could not find %s" q))
         (throw e))))))
          
 ;;; General Requests 
