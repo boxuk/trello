@@ -39,13 +39,19 @@ Getting your member information
 Getting all your boards
 
 ```clojure
-(all-boards)
+(get-all :boards)
 ```
 
 Getting all the organizations you belong to
 
 ```clojure
-(all-organizations)
+(get-all :oranizations)
+```
+
+Getting all cards
+
+```clojure
+(get-all :cards)
 ```
 
 ## Unit Tests
