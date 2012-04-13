@@ -26,6 +26,6 @@ Getting all the organizations you belong to
 
 ## License
 
-Copyright © Owain Lewis
+Copyright © BoxUK
 
 Distributed under the Eclipse Public License, the same as Clojure.
