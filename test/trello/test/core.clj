@@ -9,7 +9,10 @@
   (fn [req] {:status 200 :headers {} :body json-string}))
 
 (def test-routes
-  {#".*" (json "{}")}) 
+  {
+    #".*members\/foo.*" (json "{\"name\": \"foo\"}")
+    #".*members\/me.*" (json "{\"name\": \"tester\"}")
+  })
 
 (defmacro with-fake-api [& body]
   `(binding [auth-key "" auth-token ""]
@@ -24,7 +27,9 @@
   (generate-query-string "foo" "x" "y" {:baz "boo"}) => "https://api.trello.com/1/foo?key=x&token=y&baz=boo"
   (generate-query-string "foo" "x" "y") => "https://api.trello.com/1/foo?key=x&token=y")
 
-(facts "about simple api requests"
-  (with-fake-api
-    (api-request "members/me" "") => {}))
+(with-fake-api
+  (facts "about member requests"
+    (member "foo") => (map-containing {:name "foo"})
+    (member) => (map-containing {:name "tester"}))
+)
 

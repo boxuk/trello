@@ -38,9 +38,9 @@
    auth is a vector [trello_key trello_token]"
   (let [[k t] auth
         url (generate-query-string query k t)
-        req {:url url :method http_method}] 
-        (json/parse-string
-          (get (client/request req) :body))))
+        req {:url url :method http_method}
+        body (get (client/request req) :body)] 
+        (json/parse-string body true)))
 
 (defn api-request [method q]
   "Make a request to the API. Returns JSON response or HTTP error code"
@@ -53,9 +53,10 @@
 ;;; General Requests 
 
 (defn member
-  "Returns all the information about the current user"
-  []
-  (api-request :get "members/me"))
+  "Returns all the information about the specified user,
+   or the current user if none specified"
+  ([] (member "me"))
+  ([id] (api-request :get (str "members/" id))))
 
 (defn all-boards
   "Return all the boards for the current user"
