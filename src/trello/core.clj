@@ -27,8 +27,11 @@
   "Abstracting this function to make it easier to debug
   the request being passed to the API"
   [request k t & params]
-  (let [url (str base-url request "?key=" k "&token=" t)]
-    url))
+  (format "%s%s?key=%s&token=%s%s"
+    base-url request k t
+    (apply str 
+      (for [[k v] (first params)] 
+        (str "&" (name k) "=" v)))))
 
 (defn convert-keys
   "Convert string keys into keywords. Abstracted into
