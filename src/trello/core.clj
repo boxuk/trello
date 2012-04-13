@@ -69,15 +69,19 @@
   ([] (member "me"))
   ([id] (api-request :get (str "members/" id))))
 
-(defn all-boards
-  "Return all the boards for the current user"
-  []
-  (api-request :get "members/my/boards/all"))
-
-(defn all-organizations
-  "Return all the organizations this member belongs to"
-  []
-  (api-request :get "members/my/organizations"))
+(defn get-all-query
+  "Perform a query that returns all results for a given search term q"
+  [q]
+  (api-request :get (format "members/my/%s/all" q)))
+  
+(defn get-all [item]
+  "Return all results for item. Item can be either a string or keyword"
+  (let [query (if-not (keyword? item) (keyword item) item)]
+  (condp = query
+    :boards (get-all-query "boards")
+    :cards (get-all-query "cards")
+    :organizations (get-all-query "organizations")
+    (prn (format "Not such item %s" item)))))
 
 (defn filter-by-param
   "Given a result map, filter out the key specified.
