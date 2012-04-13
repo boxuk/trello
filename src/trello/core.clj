@@ -58,8 +58,11 @@
     (prn "Please set your auth key and token before making a request")
     (try
       (make-api-request method q [auth-key auth-token])
-    (catch Exception e e))))
-
+    (catch Exception e
+      (if (boolean (re-find #"404" (.getMessage e)))
+        (prn "404. Url not found")
+        (throw e))))))
+         
 ;;; General Requests 
 
 (defn member
