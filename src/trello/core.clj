@@ -1,6 +1,7 @@
 (ns trello.core
   (:require [clj-http.client :as client])
-  (:use [cheshire.core :as json]))
+  (:use clojure.walk
+        [cheshire.core :as json]))
 
 ;;; Clojure wrapper for the Trello.com API
 
@@ -10,9 +11,9 @@
   "Gets an env var. Used in development to store auth data"
   (get (System/getenv) v))
 
-(def auth-key (get-env-var "TRELLO_KEY"))
+(def ^:dynamic auth-key (get-env-var "TRELLO_KEY"))
 
-(def auth-token (get-env-var "TRELLO_TOKEN"))
+(def ^:dynamic auth-token (get-env-var "TRELLO_TOKEN"))
 
 (defn normalize-request
   "Given a request that starts with a forward slash, strip the
@@ -31,11 +32,10 @@
 
 (defn convert-keys
   "Convert string keys into keywords. Abstracted into
-   separate function to make it easier to test."
+   separate function to make it easier to test.
+  @todo remove?"
   [m]
-  (into {}
-    (for [[k _] m]
-      [(keyword k) _])))
+  (keywordize-keys m))
 
 (defn- make-api-request [http_method, query, auth & params]
   "Make a request to the Trello API and parse
