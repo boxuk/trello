@@ -2,34 +2,62 @@
   (:require [clj-http.client :as client])
   (:use [cheshire.core :as json]))
 
+;;; Clojure wrapper for the Trello.com API
+
 (def base-url "https://api.trello.com/1/")
 
 (defn get-env-var [v]
   "Gets an env var. Used in development to store auth data"
   (get (System/getenv) v))
 
-(def auth_key (get-env-var "TRELLO_KEY"))
+(def auth-key (get-env-var "TRELLO_KEY"))
 
-(def auth_token (get-env-var "TRELLO_TOKEN"))
+(def auth-token (get-env-var "TRELLO_TOKEN"))
 
-(defn- make-api-request [http_method, query, auth]
+(defn normalize-request
+  "Given a request that starts with a forward slash, strip the
+   slash to normalize the request string"
+  [request-string]
+  (if (.startsWith request-string "/")
+    (subs request-string 1)
+    request-string))
+
+(defn generate-query-string
+  "Abstracting this function to make it easier to debug
+  the request being passed to the API"
+  [request k t & params]
+  (let [url (str base-url request "?key=" k "&token=" t)]
+    (do
+      (prn url)
+       url)))
+
+(defn convert-keys
+  "Convert string keys into keywords. Abstracted into
+   separate function to make it easier to test."
+  [m]
+  (into {}
+    (for [[k _] m]
+      [(keyword k) _])))
+
+(defn- make-api-request [http_method, query, auth & params]
   "Make a request to the Trello API and parse
    the response. If the response fails catch and return the HTTP error.
    auth is a vector [trello_key trello_token]"
   (let [[k t] auth
-        url (str base-url query "?key=" k "&token=" t)
-        req {:url url :method http_method}]
-    (into {} 
-      (for [[k v] 
+        url (generate-query-string query k t)
+        req {:url url :method http_method}] 
         (json/parse-string
-          (get (client/request req) :body))]
-    [(keyword k) v]))))
-	  
+          (get (client/request req) :body))))
+
 (defn api-request [method q]
   "Make a request to the API. Returns JSON response or HTTP error code"
-  (make-api-request method "members/me" [auth_key auth_token]))
+  (if (or (nil? auth-key) (nil? auth-token))
+    (prn "Please set your auth key and token before making a request")
+    (try
+      (make-api-request method q [auth-key auth-token])
+      (catch Exception e e))))
 
-;; General Requests 
+;;; General Requests 
 
 (defn member
   "Returns all the information about the current user"
@@ -45,6 +73,16 @@
   "Return all the organizations this member belongs to"
   []
   (api-request :get "members/my/organizations"))
+
+(defn filter-by-param
+  "Given a result map filter out the key specified
+   Utility function for inspecting collections"
+  [key, results]
+  (if (map? results)
+    (vector (get results key))
+    (map #(get % key) results)))
+  
+;;; Board API
 
 (defn -main
   [& args]
