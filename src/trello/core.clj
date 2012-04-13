@@ -1,6 +1,7 @@
 (ns trello.core
-  (:require [clj-http.client :as client])
-  (:use [cheshire.core :as json]))
+  (:require [clj-http.client :as client]
+            [cheshire.core :as json]
+            [clojure.string :as string]))
 
 ;;; Clojure wrapper for the Trello.com API
 
@@ -22,22 +23,32 @@
     (subs request-string 1)
     request-string))
 
-(defn generate-query-string
-  "Abstracting this function to make it easier to debug
-  the request being passed to the API"
-  [request k t & params]
-  (format "%s%s?key=%s&token=%s%s"
-    base-url request k t
-    (apply str 
-      (for [[k v] (first params)] 
-        (str "&" (name k) "=" v)))))
+(defn- collapse-csv
+  "Collapse sequential values to a CSV"
+  [[k v]]
+  (vector k (if (vector? v) 
+                (string/join "," v)
+                v)))
+
+(defn- generate-params
+  "Creates the API parameters part of the query string"
+  [params]
+  (apply str 
+    (for [[k v] (map collapse-csv params)] 
+      (str "&" (name k) "=" v))))
+
+(defn generate-url
+  [request k t & [params]]
+  (str base-url request
+       (format "?key=%s&token=%s" k t)
+       (generate-params params)))
 
 (defn- make-api-request [http_method, query, auth & params]
   "Make a request to the Trello API and parse
    the response. If the response fails catch and return the HTTP error.
    auth is a vector [trello_key trello_token]"
   (let [[k t] auth
-        url (generate-query-string query k t)
+        url (generate-url query k t)
         req {:url url :method http_method}
         body (get (client/request req) :body)] 
         (json/parse-string body true)))
