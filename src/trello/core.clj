@@ -15,7 +15,7 @@
 
 (def ^:dynamic auth-token (get-env-var "TRELLO_TOKEN"))
 
-(defn normalize-request
+(defn- normalize-request
   "Given a request that starts with a forward slash, strip the
    slash to normalize the request string"
   [request-string]
@@ -27,8 +27,7 @@
   "Collapse sequential values to a CSV"
   [[k v]]
   (vector k (if (vector? v) 
-                (string/join "," v)
-                v)))
+                (string/join "," v) v)))
 
 (defn- generate-params
   "Creates the API parameters part of the query string"
@@ -37,7 +36,7 @@
     (for [[k v] (map collapse-csv params)] 
       (str "&" (name k) "=" v))))
 
-(defn generate-url
+(defn- generate-url
   [request k t & [params]]
   (str base-url request
        (format "?key=%s&token=%s" k t)
@@ -82,22 +81,13 @@
     :cards (get-all-query "cards")
     :organizations (get-all-query "organizations")
     (prn (format "Not such item %s" item)))))
-
-(defn filter-by-param
-  "Given a result map, filter out the key specified.
-   Utility function for inspecting collections"
-  [key, results]
-  (when-let [vector? results]
-    (doseq [item (map #(get % key) results)]
-      (prn item))))
   
 ;;; Boards
 
 (defn get-board
   "Get a single Trello board"
   ([] (get-all :boards))
-  ([id] (api-request :get (format "boards/%s" id))))
+  ([id] (api-request :get (format "boards/%s/lists" id))))
 
 (defn -main
-  [& args]
-  ())
+  [& args] )
