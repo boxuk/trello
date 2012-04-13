@@ -91,7 +91,12 @@
     (doseq [item (map #(get % key) results)]
       (prn item))))
   
-;;; Board API
+;;; Boards
+
+(defn get-board
+  "Get a single Trello board"
+  ([] (get-all :boards))
+  ([id] (api-request :get (format "boards/%s" id))))
 
 (defn -main
   [& args]
