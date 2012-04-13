@@ -27,9 +27,7 @@
   the request being passed to the API"
   [request k t & params]
   (let [url (str base-url request "?key=" k "&token=" t)]
-    (do
-      (prn url)
-       url)))
+    url))
 
 (defn convert-keys
   "Convert string keys into keywords. Abstracted into
