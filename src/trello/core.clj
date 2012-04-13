@@ -1,7 +1,6 @@
 (ns trello.core
   (:require [clj-http.client :as client])
-  (:use clojure.walk
-        [cheshire.core :as json]))
+  (:use [cheshire.core :as json]))
 
 ;;; Clojure wrapper for the Trello.com API
 
@@ -32,13 +31,6 @@
     (apply str 
       (for [[k v] (first params)] 
         (str "&" (name k) "=" v)))))
-
-(defn convert-keys
-  "Convert string keys into keywords. Abstracted into
-   separate function to make it easier to test.
-  @todo remove?"
-  [m]
-  (keywordize-keys m))
 
 (defn- make-api-request [http_method, query, auth & params]
   "Make a request to the Trello API and parse

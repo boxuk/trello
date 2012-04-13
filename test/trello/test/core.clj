@@ -24,9 +24,6 @@
   (generate-query-string "foo" "x" "y" {:baz "boo"}) => "https://api.trello.com/1/foo?key=x&token=y&baz=boo"
   (generate-query-string "foo" "x" "y") => "https://api.trello.com/1/foo?key=x&token=y")
 
-(facts "about converting keys to keywords"
-  (convert-keys {"foo" "bar"}) => {:foo "bar"})
-
 (facts "about simple api requests"
   (with-fake-api
     (api-request "members/me" "") => {}))
