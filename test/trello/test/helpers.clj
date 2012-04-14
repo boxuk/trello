@@ -10,6 +10,7 @@
 (def test-routes
   {
     #".*members\/foo.*" (json "{\"name\": \"foo\"}")
+    #".*members\/me.*fields=bazzle" (json "{\"bazzle\": 1}")
     #".*members\/me.*" (json "{\"name\": \"tester\"}")
   })
 
