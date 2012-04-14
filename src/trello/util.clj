@@ -5,7 +5,7 @@
   [hash]
   (let [gravatar-hash hash
         base-url "http://www.gravatar.com/avatar"]
-    [:img {:src (format "%s/%s?d=mm" base-url avatar-hash)}]))
+    [:img {:src (format "%s/%s?d=mm" base-url gravatar-hash)}]))
   		
 (defn filter-by-param
   "Given a result map, filter out and return only the values for

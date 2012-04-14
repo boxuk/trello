@@ -1,36 +1,11 @@
 (ns trello.test.core
   (:use trello.core
         clj-http.fake
+        trello.test.helpers
         midje.sweet))
-
-(defn- json 
-  "Response with specified JSON string"
-  [json-string]
-  (fn [req] {:status 200 :headers {} :body json-string}))
-
-(def test-routes
-  {
-    #".*members\/foo.*" (json "{\"name\": \"foo\"}")
-    #".*members\/me.*" (json "{\"name\": \"tester\"}")
-  })
-
-(defmacro with-fake-api [& body]
-  `(binding [auth-key "" auth-token ""]
-     (with-fake-routes test-routes
-       (do ~@body))))
-
-(facts "about normalising requests"
-  (normalize-request "foo/bar") => "foo/bar"
-  (normalize-request "/foo/bar") => "foo/bar")
-
-(facts "about generating urls"
-  (generate-url "foo" "" "" {:baz ["qwe" "rty"]}) => (contains "baz=qwe,rty")
-  (generate-url "foo" "x" "y" {:baz "boo"}) => "https://api.trello.com/1/foo?key=x&token=y&baz=boo"
-  (generate-url "foo" "x" "y") => "https://api.trello.com/1/foo?key=x&token=y")
 
 (with-fake-api
   (facts "about member requests"
     (member "foo") => (map-containing {:name "foo"})
     (member) => (map-containing {:name "tester"}))
 )
-
