@@ -1,19 +1,26 @@
-(ns trello.client
+
+;; 
+(ns ^{:doc "The client namespace contains the raw HTTP functions for accessing
+            and parsing the responses from the Trello API."}
+  trello.client
   (:require [clj-http.client :as client]
             [cheshire.core :as json]
             [clojure.string :as string]))
 
-;; Base namespace for making HTTP requests and filtering responses
+(def ^{:doc "Define the main URL for the Trello API in one place"}
+  base-url "https://api.trello.com/1/")
 
-(def base-url "https://api.trello.com/1/")
-
-(defn get-env-var [v]
-  "Gets an env var. Used in development to store auth data"
+(defn get-env-var
+  "Gets an environment variable. Configuration is stored in environment
+   variables and this allows easy access to that."
+  [v]
   (get (System/getenv) v))
 
-(def ^:dynamic auth-key (get-env-var "TRELLO_KEY"))
+(def ^{:dynamic true :doc "Your key for the Trello API"}
+  auth-key (get-env-var "TRELLO_KEY"))
 
-(def ^:dynamic auth-token (get-env-var "TRELLO_TOKEN"))
+(def ^{:dynamic true :doc "Your token for the Trello API"}
+  auth-token (get-env-var "TRELLO_TOKEN"))
 
 (defn- normalize-request
   "Given a request that starts with a forward slash, strip the
@@ -37,23 +44,29 @@
       (str "&" (name k) "=" v))))
 
 (defn- generate-url
+  "Creates an absolute API URL with authentication tokens, and extra
+  parameters for each endpoint"
   [request k t & [params]]
   (str base-url request
        (format "?key=%s&token=%s" k t)
        (generate-params params)))
 
-(defn- make-api-request [http_method, query, auth & [params]]
+(defn- make-api-request 
   "Make a request to the Trello API and parse
    the response. If the response fails catch and return the HTTP error.
    auth is a vector [trello_key trello_token]"
+  [http_method query auth & [params]]
   (let [[k t] auth
         url (generate-url query k t params)
         req {:url url :method http_method}
         body (get (client/request req) :body)] 
         (json/parse-string body true)))
 
-(defn api-request [method q & [params]]
-  "Make a request to the API. Returns JSON response or HTTP error code"
+;; Public
+
+(defn api-request 
+  "Make a request to the API. Returns JSON response or HTTP error code."
+  [method q & [params]]
   (if (or (nil? auth-key) (nil? auth-token))
     (prn "Please set your auth key and token before making a request")
     (try
