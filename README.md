@@ -30,6 +30,8 @@ This will print out all the id's for your Trello boards.
 
 The following methods all convert JSON results into clojure maps.
 
+## Get all queries
+
 Getting your member information
 
 ```clojure
