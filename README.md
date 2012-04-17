@@ -54,6 +54,44 @@ Getting all cards
 (get-all :cards)
 ```
 
+# API METHOD DOCS
+
+## Board API
+
+Get all boards
+
+```clojure
+(all-boards)
+```
+
+Get a single board 
+
+```clojure
+(get-board id)
+```
+
+Get all the lists for a board
+
+```clojure
+(all-lists-for-board id)
+```
+
+## Lists API
+
+Get a single list
+
+```clojure
+(get-list id)
+```
+
+Get all the cards for a list
+
+```clojure
+(get-list-cards list_id)
+```
+
+## Cards
+
 ## Unit Tests
 
 Unit tests are written in Midje, run them all once using:
