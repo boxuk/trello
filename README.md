@@ -54,8 +54,6 @@ Getting all cards
 (get-all :cards)
 ```
 
-# API METHOD DOCS
-
 ## Board API
 
 Get all boards
@@ -91,6 +89,8 @@ Get all the cards for a list
 ```
 
 ## Cards
+
+In progress
 
 ## Unit Tests
 
