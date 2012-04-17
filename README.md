@@ -88,8 +88,6 @@ Get a member by id
 (member id)
 ```
 
-The following function allows you to perform the following api methods
-
 Member actions
 
 ```clojure
