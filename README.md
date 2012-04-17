@@ -134,7 +134,11 @@ Get all the cards for a list
 
 ## Cards
 
-In progress
+Get a card by id
+
+```clojure
+(get-card id)
+```
 
 ## Unit Tests
 
