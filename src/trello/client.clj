@@ -1,5 +1,3 @@
-
-;; 
 (ns ^{:doc "The client namespace contains the raw HTTP functions for accessing
             and parsing the responses from the Trello API."}
   trello.client
@@ -75,4 +73,3 @@
       (if (boolean (re-find #"404" (.getMessage e)))
         (prn (format "404. Could not find %s" q))
         (throw e))))))
-
