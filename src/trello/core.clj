@@ -63,7 +63,8 @@
   ([id] (api/api-request :get (format "lists/%s" id))))
 
 (defn list-cards
-  "Get all cards for a list"
+  "Returns all cards for a list
+   param id is the id of a Trello list"
   [id]
   (api/api-request :get (format "lists/%s/cards" id)))
 
