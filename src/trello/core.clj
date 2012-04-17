@@ -6,9 +6,10 @@
 
 (defn member
   "Returns all the information about the specified user,
-   or the current user if none specified"
+   or the current user if none specified."
   ([] (member "me"))
-  ([id] (api/api-request :get (str "members/" id))))
+  ([id] (api/api-request :get (format "members/%s" id)))
+  ([id param] (api/api-request :get (format "members/%s/%s" id param))))
 
 (defn get-all-query
   "Perform a query that returns all results for a given search term q"

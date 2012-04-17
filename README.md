@@ -74,6 +74,52 @@ Get all the lists for a board
 (all-lists-for-board id)
 ```
 
+## Member API
+
+Get your member information
+
+```clojure
+(member)
+```
+
+Get a member by id
+
+```clojure
+(member id)
+```
+
+The following function allows you to perform the following api methods
+
+Member actions
+
+```clojure
+(member id "actions")
+```
+
+Member boards
+
+```clojure
+(member id "boards")
+```
+
+Member cards
+
+```clojure
+(member id "cards")
+```
+
+Member notifications
+
+```clojure
+(member id "notifications")
+```
+
+Member organizations
+
+```clojure
+(member id "organizations")
+```
+
 ## Lists API
 
 Get a single list
@@ -104,6 +150,14 @@ Or keep them running while developing with lazytest:
 
 ```bash
 lein midje --lazytest
+```
+
+## Custom queries
+
+If we have missed any API methods you might need you can perform an arbitray API call with the following method that takes two params the http method (e.g :get) and your query as a string.
+
+```clojure
+(api/api-request :http-method "yourquery")
 ```
 
 ## License
