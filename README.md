@@ -2,6 +2,10 @@
 
 Clojure wrapper for the Trello API
 
+TODO
+
+Actions, Checklists, Notifications, Organizations
+
 ## Usage
 
 You need to set ENV variables for your Trello auth key and token. The two environment vars to set are
