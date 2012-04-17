@@ -72,5 +72,10 @@
 ;; ==========================
 ;; Get a single card
 
+(defn get-card
+  "Get a single card"
+  [id]
+  (api/api-request :get (format "cards/%s" id)))
+
 (defn -main
   [& args] )
