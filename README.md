@@ -28,7 +28,7 @@ that lets you quickly inspect your results that can be used as follows.
 
 This will print out all the id's for your Trello boards.
 
-The following methods all return a JSON response from the server.
+The following methods all convert JSON results into clojure maps.
 
 Getting your member information
 
