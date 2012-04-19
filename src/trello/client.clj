@@ -24,11 +24,10 @@
   *protocol* "http")
 
 (defmacro with-https
-  "Make a HTTP request using https"
-  [ & body]
+  {:doc "Make a HTTP request using https"}
+  [& body]
   `(binding [*protocol* "https"]
-     (do
-       ~@body)))
+     (do ~@body)))
 
 (defn- normalize-request
   "Given a request that starts with a forward slash, strip the
