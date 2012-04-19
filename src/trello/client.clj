@@ -6,7 +6,7 @@
             [clojure.string :as string]))
 
 (def ^{:doc "Define the main URL for the Trello API in one place"}
-  base-url "https://api.trello.com/1/")
+  base-url "api.trello.com/1/")
 
 (defn get-env-var
   "Gets an environment variable. Configuration is stored in environment
@@ -19,6 +19,16 @@
 
 (def ^{:dynamic true :doc "Your token for the Trello API"}
   auth-token (get-env-var "TRELLO_TOKEN"))
+
+(def ^{:dynamic true :doc "The http protocol use to make a request"}
+  *protocol* "http")
+
+(defmacro with-https
+  "Make a HTTP request using https"
+  [ & body]
+  `(binding [*protocol* "https"]
+     (do
+       ~@body)))
 
 (defn- normalize-request
   "Given a request that starts with a forward slash, strip the
@@ -45,9 +55,10 @@
   "Creates an absolute API URL with authentication tokens, and extra
   parameters for each endpoint"
   [request k t & [params]]
-  (str base-url request
+  (with-https
+    (str *protocol* "://" base-url request
        (format "?key=%s&token=%s" k t)
-       (generate-params params)))
+       (generate-params params))))
 
 (defn- make-api-request 
   "Make a request to the Trello API and parse
@@ -57,7 +68,7 @@
   (let [[k t] auth
         url (generate-url query k t params)
         req {:url url :method http_method}
-        body (get (client/request req) :body)] 
+        body (get (client/request req) :body)]
         (json/parse-string body true)))
 
 ;; Public
