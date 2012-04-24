@@ -1,12 +1,14 @@
 # Trello
 
-Clojure wrapper for the Trello API
-
-TODO
-
-Actions, Checklists, Notifications, Organizations
+Clojure wrapper for the Trello API. If you would like to contribute feel free to fork the project, start hacking, and submit a pull request.
 
 ## Usage
+
+Trello is available from Clojars.org. To use it, add the following as a dependency in Leiningen.
+
+```clojure
+[trello "0.1.1-SNAPSHOT"]
+```
 
 You need to set ENV variables for your Trello auth key and token. The two environment vars to set are
 
@@ -167,6 +169,12 @@ If we have missed any API methods you might need you can perform an arbitray API
 ```clojure
 (api/api-request :http-method "yourquery")
 ```
+
+TODO
+
+Future releases will include the following:
+
+Actions, Checklists, Notifications, Organizations
 
 ## License
 
