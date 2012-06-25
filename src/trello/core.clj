@@ -16,8 +16,9 @@
   [q]
   (api/api-request :get (format "members/my/%s/all" q)))
   
-(defn get-all [item]
+(defn get-all
   "Return all results for item. Item can be either a string or keyword"
+  [item]
   (let [query (if-not (keyword? item) (keyword item) item)]
   (condp = query
     :boards (get-all-query "boards")
@@ -77,6 +78,3 @@
   "Get a single card"
   [id]
   (api/api-request :get (format "cards/%s" id)))
-
-(defn -main
-  [& args] )
