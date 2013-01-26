@@ -44,13 +44,6 @@
   [idx]
   (map (fn [b] (get b :name)) (all-lists-for-board idx)))
 
-;; Lists
-;; 
-;; Get a specific list
-;; Get all lists
-;; Get all cards for a list
-;;
-
 (defn get-list
   "Get a single list"
   ([] ())
@@ -62,11 +55,8 @@
   [id]
   (client/api-request :get (format "lists/%s/cards" id)))
 
-;; Cards
-;; ==========================
-;; Get a single card
-
 (defn get-card
   "Get a single card"
   [id]
   (client/api-request :get (format "cards/%s" id)))
+
