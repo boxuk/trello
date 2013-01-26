@@ -82,8 +82,7 @@
         (throw e))))))
 
 (defmacro with-auth [k token & body]
-  `(binding [*auth-key* ~k
-            *auth-token* ~token]
+  `(binding [*auth-key* ~k *auth-token* ~token]
      (do ~@body)))
 
 (defn auth [settings] 
