@@ -1,2 +1,2 @@
 {:key "" 
- :token ""}
+ :secret ""}
