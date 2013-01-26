@@ -1,6 +1,6 @@
 # Trello
 
-Clojure wrapper for the Trello API. If you would like to contribute feel free to fork the project, start hacking, and submit a pull request.
+Clojure wrapper for the Trello API.
 
 ## Usage
 

@@ -5,23 +5,21 @@
             [cheshire.core :as json]
             [clojure.string :as string]))
 
-(def ^{:doc "Define the main URL for the Trello API in one place"}
-  base-url "api.trello.com/1/")
+(def base-url "api.trello.com/1/")
 
-(defn get-env-var
-  "Gets an environment variable. Configuration is stored in environment
-   variables and this allows easy access to that."
-  [v]
-  (get (System/getenv) v))
+(defn get-env-var [v] (get (System/getenv) v))
 
-(def ^{:dynamic true :doc "Your key for the Trello API"}
-  auth-key (get-env-var "TRELLO_KEY"))
+(def settings
+  (ref
+    {:auth-key ""
+     :auth-token ""
+     :protocol ""}))
 
-(def ^{:dynamic true :doc "Your token for the Trello API"}
-  auth-token (get-env-var "TRELLO_TOKEN"))
+(def ^:dynamic *auth-key* (get-env-var "TRELLO_KEY"))
 
-(def ^{:dynamic true :doc "The http protocol use to make a request"}
-  *protocol* "http")
+(def ^:dynamic *auth-token* (get-env-var "TRELLO_TOKEN"))
+
+(def ^:dynamic *protocol* "http")
 
 (defmacro with-https
   {:doc "Make a HTTP request using https"}
@@ -40,8 +38,10 @@
 (defn- collapse-csv
   "Collapse sequential values to a CSV"
   [[k v]]
-  (vector k (if (vector? v) 
-                (string/join "," v) v)))
+  (vector k 
+    (if (vector? v) 
+      (string/join "," v) 
+      v)))
 
 (defn- generate-params
   "Creates the API parameters part of the query string"
@@ -66,20 +66,27 @@
   [http_method query auth & [params]]
   (let [[k t] auth
         url (generate-url query k t params)
-        req {:url url :method http_method}
-        body (get (client/request req) :body)]
-        (json/parse-string body true)))
+        req {:url url :method http_method}]
+    (json/parse-string 
+      (get (client/request req) :body)
+        true)))
 
 ;; Public
 
 (defn api-request 
   "Make a request to the API. Returns JSON response or HTTP error code."
   [method q & [params]]
-  (if (or (nil? auth-key) (nil? auth-token))
+  (if (or (nil? *auth-key*) (nil? *auth-token*))
     (prn "Please set your auth key and token before making a request")
     (try
-      (make-api-request method q [auth-key auth-token] params)
+      (make-api-request method q [*auth-key* *auth-token*] params)
     (catch Exception e
       (if (boolean (re-find #"404" (.getMessage e)))
         (prn (format "404. Could not find %s" q))
         (throw e))))))
+
+(defmacro with-auth [key token & body]
+  `(binding [*auth-key* key
+             *auth-token* token]
+     (do ~@body)))
+
