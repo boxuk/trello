@@ -11,4 +11,9 @@
 (defn get
   "Get Trello boards"
   ([] (all-boards)) ;; all
-  ([id] (client/api-request :get (format "boards/%s" id))))
+  ([id] (client/api-request :get (format "boards/%s" id)))
+  ([id resource] (client/api-request :get (format "boards/%s/%s" id (name resource)))))
+
+(defn create!
+  "Create a new Trello board"
+  )
