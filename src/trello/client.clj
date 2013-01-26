@@ -81,10 +81,17 @@
         (prn (format "404. Could not find %s" q))
         (throw e))))))
 
+;; Authentication 
+
 (defmacro with-auth [k token & body]
   `(binding [*auth-key* ~k *auth-token* ~token]
      (do ~@body)))
 
-(defn auth [settings] 
+(defn auth-inspect [settings] 
   ((juxt :key :token) settings))
+
+(defmacro auth! [settings & body]
+  `(with-auth (:key ~settings) (:token ~settings)
+     (do ~@body)))
+
     

@@ -12,143 +12,53 @@ Trello is available from Clojars.org. To use it, add the following as a dependen
 [trello "0.1.1-SNAPSHOT"]
 ```
 
-You need to set ENV variables for your Trello auth key and token. The two environment vars to set are
-
-```bash
-export TRELLO_KEY="mykey"
-export TRELLO_TOKEN="mytoken"
-```
-
 Require the Trello.core namespace into your REPL or project
 
 ```clojure
 (require 'trello.core)
 ```
 
-When hacking in the REPL you might want to quickly get a list of your board ids or users etc. There is a utility function
-that lets you quickly inspect your results that can be used as follows.
+# Authentication
+
+This library does NOT implement OAuth. You'll need to get an access token from Trello. To do this you can use the following URL
+
+https://trello.com/1/authorize?key=YOURKEY&name=My+Application&expiration=1day&response_type=token&scope=read,write
+
+Since all requests need authentication you'll need to use the with-auth macro to wrap your requests.
 
 ```clojure
-(def r (all-boards))
 
-(filter-by-param "id" r)
+(with-auth api-key api-token
+  (boards))
+
 ```
 
-This will print out all the id's for your Trello boards.
-
-The following methods all convert JSON results into clojure maps.
-
-## Get all queries
-
-Getting your member information
+Alternatively just pass a settings map through to the auth! macro where :key is your Trello api key and :token is your auth token
 
 ```clojure
-(member)
+
+(:use [trello.client :as client])
+
+(def settings {:key "MYKEY" :token "MYTOKEN"})
+
+(client/auth! settings
+  (boards))
+
 ```
 
-Getting all your boards
+## Members
 
-```clojure
-(get-all :boards)
-```
+The following API methods are available for querying member resources
 
-Getting all the organizations you belong to
+## Boards
 
-```clojure
-(get-all :oranizations)
-```
-
-Getting all cards
-
-```clojure
-(get-all :cards)
-```
-
-## Board API
-
-Get all boards
-
-```clojure
-(all-boards)
-```
-
-Get a single board 
-
-```clojure
-(get-board id)
-```
-
-Get all the lists for a board
-
-```clojure
-(all-lists-for-board id)
-```
-
-## Member API
-
-Get your member information
-
-```clojure
-(member)
-```
-
-Get a member by id
-
-```clojure
-(member id)
-```
-
-Member actions
-
-```clojure
-(member id "actions")
-```
-
-Member boards
-
-```clojure
-(member id "boards")
-```
-
-Member cards
-
-```clojure
-(member id "cards")
-```
-
-Member notifications
-
-```clojure
-(member id "notifications")
-```
-
-Member organizations
-
-```clojure
-(member id "organizations")
-```
-
-## Lists API
-
-Get a single list
-
-```clojure
-(get-list id)
-```
-
-Get all the cards for a list
-
-```clojure
-(get-list-cards list_id)
-```
+The following API methods are available for querying board resources
 
 ## Cards
 
-Get a card by id
+The following API methods are available for querying card resources
 
-```clojure
-(get-card id)
-```
+## Lists
 
 ## Unit Tests
 
