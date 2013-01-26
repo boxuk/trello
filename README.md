@@ -2,6 +2,8 @@
 
 Clojure wrapper for the Trello API.
 
+To generate your api key and api token visit: https://trello.com/1/appKey/generate
+
 ## Usage
 
 Trello is available from Clojars.org. To use it, add the following as a dependency in Leiningen.

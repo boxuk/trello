@@ -25,14 +25,6 @@
     :cards (get-all-query "cards")
     :organizations (get-all-query "organizations")
     (prn (format "Not such item %s" item)))))
-  
-;; Board API Methods
-;; ===========================
-;; Get a single board
-;; Get all boards
-;; Get all lists for a board
-;; Get open lists for a board
-;; Get closed lists for a board
 
 (defn all-boards [] (get-all :boards))
 

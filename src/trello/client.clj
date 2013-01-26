@@ -5,15 +5,14 @@
             [cheshire.core :as json]
             [clojure.string :as string]))
 
+(def settings 
+  (binding [*read-eval* false]
+    (with-open [r (clojure.java.io/reader "config.clj")]
+      (read (java.io.PushbackReader. r)))))
+
 (def base-url "api.trello.com/1/")
 
 (defn get-env-var [v] (get (System/getenv) v))
-
-(def settings
-  (ref
-    {:auth-key ""
-     :auth-token ""
-     :protocol ""}))
 
 (def ^:dynamic *auth-key* (get-env-var "TRELLO_KEY"))
 
@@ -75,7 +74,7 @@
 
 (defn api-request 
   "Make a request to the API. Returns JSON response or HTTP error code."
-  [method q & [params]]
+  [method q & params]
   (if (or (nil? *auth-key*) (nil? *auth-token*))
     (prn "Please set your auth key and token before making a request")
     (try
@@ -85,8 +84,8 @@
         (prn (format "404. Could not find %s" q))
         (throw e))))))
 
-(defmacro with-auth [key token & body]
-  `(binding [*auth-key* key
-             *auth-token* token]
+(defmacro with-auth [settings & body]
+  `(binding [*auth-key* (:key settings)
+             *auth-token* (:token settings)]
      (do ~@body)))
 
