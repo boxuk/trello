@@ -5,18 +5,21 @@
             [cheshire.core :as json]
             [clojure.string :as string]))
 
+(def base-url "api.trello.com/1/")
+
+(def authorize-url "https://trello.com/1/authorize")
+
 (def settings 
   (binding [*read-eval* false]
     (with-open [r (clojure.java.io/reader "config.clj")]
       (read (java.io.PushbackReader. r)))))
 
-(def base-url "api.trello.com/1/")
-
 (defn get-env-var [v] 
   (get (System/getenv) v))
 
 (def ^:dynamic *auth-key* (get-env-var "TRELLO_KEY"))
-(def ^:dynamic *auth-secret* (get-env-var "TRELLO_TOKEN"))
+
+(def ^:dynamic *auth-token* (get-env-var "TRELLO_TOKEN"))
 
 (def ^:dynamic *protocol* (atom "http"))
 
@@ -52,33 +55,37 @@
 (defn- generate-url
   "Creates an absolute API URL with authentication tokens, and extra
   parameters for each endpoint"
-  [request key & [params]]
+  [request key token & [params]]
   (with-https
     (str @*protocol* "://" base-url request
-       (format "?key=%s" key)
+       (format "?key=%s&token=%s" key token)
        (generate-params params))))
 
 (defn make-api-request 
   "Make a request to the Trello API and return a response map"
-  [http_method query key & [params]]
-  (let [url (generate-url query key params)
-        req {:url url :method http_method}]
+  [method query key token & [params]]
+  (let [url (generate-url query key token params)
+        req {:url url :method method}]
     (json/parse-string 
       (get (client/request req) :body)
         true)))
 
 (defn api-request 
   [method q & params]
-  (if (nil? *auth-key*)
+  (if (and (nil? *auth-key*) (nil? *auth-token*))
     (print "Please set your auth key and token before making a request")
     (try
-      (make-api-request method q *auth-key* params)
+      (make-api-request method q *auth-key* *auth-token* params)
     (catch Exception e
       (if (boolean (re-find #"404" (.getMessage e)))
         (prn (format "404. Could not find %s" q))
         (throw e))))))
 
-(defmacro with-auth [k & body]
-  `(binding [*auth-key* ~k]
+(defmacro with-auth [k token & body]
+  `(binding [*auth-key* ~k
+            *auth-token* ~token]
      (do ~@body)))
 
+(defn auth [settings] 
+  ((juxt :key :token) settings))
+    

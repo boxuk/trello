@@ -1,5 +1,5 @@
 (ns trello.core
-  (:require [trello.client :as api]
+  (:require [trello.client :as client]
             [trello.util :as util]))
 
 ;;; General Requests 
@@ -8,13 +8,13 @@
   "Returns all the information about the specified user,
    or the current user if none specified."
   ([] (member "me"))
-  ([id] (api/api-request :get (format "members/%s" id)))
-  ([id param] (api/api-request :get (format "members/%s/%s" id param))))
+  ([id] (client/api-request :get (format "members/%s" id)))
+  ([id param] (client/api-request :get (format "members/%s/%s" id param))))
 
 (defn get-all-query
   "Perform a query that returns all results for a given search term q"
   [q]
-  (api/api-request :get (format "members/my/%s/all" q)))
+  (client/api-request :get (format "Members/my/%s/all" q)))
   
 (defn get-all
   "Return all results for item. Item can be either a string or keyword"
@@ -31,13 +31,13 @@
 (defn get-board
   "Get a single Trello board"
   ([] (get-all :boards))
-  ([id] (api/api-request :get (format "boards/%s" id))))
+  ([id] (client/api-request :get (format "boards/%s" id))))
 
 (defn all-lists-for-board
   "Return all lists for a given board
    id is a board id"
   [id]
-  (api/api-request :get (format "boards/%s/lists" id)))
+  (client/api-request :get (format "boards/%s/lists" id)))
 
 (defn get-all-list-names-for-board
   "Return an array of list names for a board"
@@ -54,13 +54,13 @@
 (defn get-list
   "Get a single list"
   ([] ())
-  ([id] (api/api-request :get (format "lists/%s" id))))
+  ([id] (client/api-request :get (format "lists/%s" id))))
 
 (defn get-list-cards
   "Returns all cards for a list
    param id is the id of a Trello list"
   [id]
-  (api/api-request :get (format "lists/%s/cards" id)))
+  (client/api-request :get (format "lists/%s/cards" id)))
 
 ;; Cards
 ;; ==========================
@@ -69,4 +69,4 @@
 (defn get-card
   "Get a single card"
   [id]
-  (api/api-request :get (format "cards/%s" id)))
+  (client/api-request :get (format "cards/%s" id)))
