@@ -75,7 +75,7 @@
   (if (and (nil? *auth-key*) (nil? *auth-token*))
     (print "Please set your auth key and token before making a request")
     (try
-      (make-api-request method q *auth-key* *auth-token* params)
+      (make-api-request method q *auth-key* *auth-token* (first params))
     (catch Exception e
       (if (boolean (re-find #"404" (.getMessage e)))
         (prn (format "404. Could not find %s" q))
