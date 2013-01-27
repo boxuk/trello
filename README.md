@@ -80,8 +80,12 @@ Get a single board
 ### Closing and reopening boards
 
 ```clojure
-(auth! {:key "YOURKEY" :token "YOURTOKEN"} (board/close "51051bbf07fecd5519000b01" false))
 
+;; Close a board
+(auth! {:key "YOURKEY" :token "YOURTOKEN"} (board/close "51051bbf07fecd5519000b01" true))
+
+;; Reopen it
+(auth! {:key "YOURKEY" :token "YOURTOKEN"} (board/close "51051bbf07fecd5519000b01" false))
 ```
 
 ## Cards
