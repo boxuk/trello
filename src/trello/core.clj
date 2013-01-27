@@ -4,13 +4,6 @@
 
 ;;; General Requests 
 
-(defn member
-  "Returns all the information about the specified user,
-   or the current user if none specified."
-  ([] (member "me"))
-  ([id] (client/api-request :get (format "members/%s" id)))
-  ([id param] (client/api-request :get (format "members/%s/%s" id param))))
-
 (defn get-all-query
   "Perform a query that returns all results for a given search term q"
   [q]

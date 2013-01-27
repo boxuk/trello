@@ -7,7 +7,12 @@
   (client/api-request :get (format "Members/my/boards/all")))
 
 (defn get
-  "Get Trello boards"
+  "Get Trello boards
+    - (get) All boards
+    - (get 123) Board by id
+    - (get 123 :resource) All resources for board
+      Resource options [:actions :cards :checklists :lists :membersInvited :members]
+  "
   ([] (all)) ;; all
   ([id] (client/api-request :get (format "boards/%s" id)))
   ([id resource] (client/api-request :get (format "boards/%s/%s" id (name resource)))))
@@ -26,4 +31,21 @@
   ([name other-params]
    (let [params (merge {:name name} other-params)]
      (client/api-request :post "boards" {:name name}))))
+
+(defn close 
+  "Toggle a board between closed and open
+   - value
+     Valid Values: true or false
+  "
+  [id value]
+  (client/api-request :put (format "boards/%s/closed" id) {:value value}))
+  
+(defn get-all-list-names-for-board
+  "Return a sequence of list names for a board"
+  [board-id]
+  (let [lists (get board-id :lists)]
+    (map 
+      (fn [list] 
+        (:name list)) 
+      lists)))
 

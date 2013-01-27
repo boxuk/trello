@@ -71,16 +71,18 @@ Get a single board
 
 ```clojure
 
-(auth! s (get "50a4c0f882b8fea3550053ae" :lists))
+(auth! {:key "YOURKEY" :token "YOURTOKEN"} (board/get "50a4c0f882b8fea3550053ae" :lists))
 
-(auth! s (get "50a4c0f882b8fea3550053ae" :boards))
+(auth! {:key "YOURKEY" :token "YOURTOKEN"} (board/get "50a4c0f882b8fea3550053ae" :boards))
 
-(auth! s (get "50a4c0f882b8fea3550053ae" :members))
+(auth! {:key "YOURKEY" :token "YOURTOKEN"} (board/get "50a4c0f882b8fea3550053ae" :members))
 ```
+### Closing and reopening boards
 
+```clojure
+(auth! {:key "YOURKEY" :token "YOURTOKEN"} (board/close "51051bbf07fecd5519000b01" false))
 
-
-
+```
 
 ## Cards
 
