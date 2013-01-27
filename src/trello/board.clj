@@ -1,6 +1,5 @@
 (ns trello.board
   (refer-clojure :exclude [get])
-  (:require [trello.client :as client])
   (:use [trello.client :as client]))
 
 (defn all []
