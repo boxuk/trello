@@ -10,3 +10,4 @@ pom.xml
 .lein-plugins
 docs
 .DS_Store
+config.clj

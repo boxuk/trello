@@ -5,28 +5,28 @@
             [cheshire.core :as json]
             [clojure.string :as string]))
 
-(def ^{:doc "Define the main URL for the Trello API in one place"}
-  base-url "api.trello.com/1/")
+(def base-url "api.trello.com/1/")
 
-(defn get-env-var
-  "Gets an environment variable. Configuration is stored in environment
-   variables and this allows easy access to that."
-  [v]
+(def authorize-url "https://trello.com/1/authorize")
+
+(def settings 
+  (binding [*read-eval* false]
+    (with-open [r (clojure.java.io/reader "config.clj")]
+      (read (java.io.PushbackReader. r)))))
+
+(defn get-env-var [v] 
   (get (System/getenv) v))
 
-(def ^{:dynamic true :doc "Your key for the Trello API"}
-  auth-key (get-env-var "TRELLO_KEY"))
+(def ^:dynamic *auth-key* (get-env-var "TRELLO_KEY"))
 
-(def ^{:dynamic true :doc "Your token for the Trello API"}
-  auth-token (get-env-var "TRELLO_TOKEN"))
+(def ^:dynamic *auth-token* (get-env-var "TRELLO_TOKEN"))
 
-(def ^{:dynamic true :doc "The http protocol use to make a request"}
-  *protocol* "http")
+(def ^:dynamic *protocol* (atom "http"))
 
 (defmacro with-https
   {:doc "Make a HTTP request using https"}
   [& body]
-  `(binding [*protocol* "https"]
+  `(binding [*protocol* (atom "https")]
      (do ~@body)))
 
 (defn- normalize-request
@@ -40,8 +40,10 @@
 (defn- collapse-csv
   "Collapse sequential values to a CSV"
   [[k v]]
-  (vector k (if (vector? v) 
-                (string/join "," v) v)))
+  (vector k 
+    (if (vector? v) 
+      (string/join "," v) 
+      v)))
 
 (defn- generate-params
   "Creates the API parameters part of the query string"
@@ -53,33 +55,43 @@
 (defn- generate-url
   "Creates an absolute API URL with authentication tokens, and extra
   parameters for each endpoint"
-  [request k t & [params]]
+  [request key token & [params]]
   (with-https
-    (str *protocol* "://" base-url request
-       (format "?key=%s&token=%s" k t)
+    (str @*protocol* "://" base-url request
+       (format "?key=%s&token=%s" key token)
        (generate-params params))))
 
-(defn- make-api-request 
-  "Make a request to the Trello API and parse
-   the response. If the response fails catch and return the HTTP error.
-   auth is a vector [trello_key trello_token]"
-  [http_method query auth & [params]]
-  (let [[k t] auth
-        url (generate-url query k t params)
-        req {:url url :method http_method}
-        body (get (client/request req) :body)]
-        (json/parse-string body true)))
-
-;; Public
+(defn make-api-request 
+  "Make a request to the Trello API and return a response map"
+  [method query key token & [params]]
+  (let [url (generate-url query key token params)
+        req {:url url :method method}]
+    (json/parse-string 
+      (get (client/request req) :body)
+        true)))
 
 (defn api-request 
-  "Make a request to the API. Returns JSON response or HTTP error code."
-  [method q & [params]]
-  (if (or (nil? auth-key) (nil? auth-token))
-    (prn "Please set your auth key and token before making a request")
+  [method q & params]
+  (if (and (nil? *auth-key*) (nil? *auth-token*))
+    (print "Please set your auth key and token before making a request")
     (try
-      (make-api-request method q [auth-key auth-token] params)
+      (make-api-request method q *auth-key* *auth-token* (first params))
     (catch Exception e
       (if (boolean (re-find #"404" (.getMessage e)))
         (prn (format "404. Could not find %s" q))
         (throw e))))))
+
+;; Authentication 
+
+(defmacro with-auth [k token & body]
+  `(binding [*auth-key* ~k *auth-token* ~token]
+     (do ~@body)))
+
+(defn auth-inspect [settings] 
+  ((juxt :key :token) settings))
+
+(defmacro auth! [settings & body]
+  `(with-auth (:key ~settings) (:token ~settings)
+     (do ~@body)))
+
+    
