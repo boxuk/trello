@@ -23,7 +23,8 @@ Since all requests need authentication you'll need to use the with-auth macro to
 ```clojure
 
 (with-auth api-key api-token
-  (boards))
+  (client/api-request :get 
+    "Members/my/boards/all"))
 
 ```
 
@@ -36,7 +37,8 @@ Alternatively just pass a settings map through to the auth! macro.
 (def settings {:key "MYKEY" :token "MYTOKEN"})
 
 (client/auth! settings
-  (boards))
+  (client/api-request :get 
+    "Members/my/boards/all"))
 
 ```
 

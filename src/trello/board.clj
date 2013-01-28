@@ -4,7 +4,7 @@
 
 (defn all []
   (client/api-request :get 
-    (format "Members/my/boards/all")))
+    "Members/my/boards/all"))
 
 (defn get
   "Get Trello boards
