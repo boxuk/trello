@@ -57,7 +57,7 @@ Get a single board
 (:use [trello.client :as client]
       [trello.board :as board])
       
-(def settings {:key "" :token "mytoken"})
+(def settings {:key "YOURKEY" :token "YOURTOKEN"})
 
 (client/auth! settings (board/get "50a4c0f882b8fea3550053ae"))
 
