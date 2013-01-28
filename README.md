@@ -34,7 +34,7 @@ Alternatively just pass a settings map through to the auth! macro.
 
 (:use [trello.client :as client]
 
-(def settings {:key "MYKEY" :token "MYTOKEN"})
+(def settings {:key "YOURKEY" :token "YOURTOKEN"})
 
 (client/auth! settings
   (client/api-request :get 
