@@ -12,12 +12,6 @@ Trello is available from Clojars.org. To use it, add the following as a dependen
 [trello "0.1.1-SNAPSHOT"]
 ```
 
-Require the Trello.core namespace into your REPL or project
-
-```clojure
-(require 'trello.core)
-```
-
 # Authentication
 
 This library does NOT implement OAuth. You'll need to get an access token from Trello. To do this you can use the following URL
@@ -37,7 +31,7 @@ Alternatively just pass a settings map through to the auth! macro where :key is 
 
 ```clojure
 
-(:use [trello.client :as client])
+(:use [trello.client :as client]
 
 (def settings {:key "MYKEY" :token "MYTOKEN"})
 
