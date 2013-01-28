@@ -27,7 +27,7 @@ Since all requests need authentication you'll need to use the with-auth macro to
 
 ```
 
-Alternatively just pass a settings map through to the auth! macro where :key is your Trello api key and :token is your auth token
+Alternatively just pass a settings map through to the auth! macro.
 
 ```clojure
 
