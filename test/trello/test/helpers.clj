@@ -15,6 +15,6 @@
   })
 
 (defmacro with-fake-api [& body]
-  `(binding [auth-key "" auth-token ""]
+  `(binding [*auth-key* "" *auth-token* ""]
      (with-fake-routes test-routes
        (do ~@body))))
