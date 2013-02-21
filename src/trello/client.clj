@@ -9,9 +9,9 @@
 
 (def authorize-url "https://trello.com/1/authorize")
 
-(def settings 
+(defn settings [f]
   (binding [*read-eval* false]
-    (with-open [r (clojure.java.io/reader "config.clj")]
+    (with-open [r (clojure.java.io/reader f)]
       (read (java.io.PushbackReader. r)))))
 
 (defn get-env-var [v] 
