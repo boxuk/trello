@@ -1,12 +1,11 @@
 (ns trello.examples
-  (:require [trello.client :as client]
-            [trello.board :as board]))
+  (:require [trello.core]))
 
 ;; Get all boards
 
-(def auth (client/auth-map-from-settings))
+(def auth (auth-map-from-settings))
 
-(def all-boards (boards/all auth))
+(def all-boards (board-all auth))
 
 
 

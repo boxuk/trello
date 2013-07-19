@@ -12,6 +12,26 @@
 (defn get [auth id]
   (client/request auth :get (format "/boards/%s" id)))
 
+(defn actions [auth id]
+  (client/request auth :get (format "/boards/%s/actions" id)))
+
+(defn cards [auth id]
+  (client/request auth :get (format "/boards/%s/cards" id)))
+
+(defn checklists [auth id]
+  (client/request auth :get (format "/boards/%s/checklists" id)))
+
+(defn lists [auth id]
+  (client/request auth :get (format "/boards/%s/lists" id)))
+
+(defn members [auth id]
+  (client/request auth :get (format "/boards/%s/members" id)))
+
+(defn memberships [auth id]
+  (client/request auth :get (format "/boards/%s/memberships" id)))
+
+(defn organization [auth id]
+  (client/request auth :get (format "/boards/%s/organization" id)))
 
 ;; (defn all [] (client/request :get (full-url (:all board-urls))))
 

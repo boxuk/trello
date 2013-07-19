@@ -57,6 +57,46 @@
     (when-let [[token key] (select-values config [:key :token])]
       {:key key :token token})))
 
-;; End HTTP utils
 ;; ************************************************************
+;; BOARDS
+;; ************************************************************
+
+(comment
+  (def auth (auth-map-from-settings))
+    (board-all auth))
+
+(defn board-all [auth]
+  (request auth :get "/members/me/boards"))
+
+(defn board-get [auth id]
+  (request auth :get (format "/boards/%s" id)))
+
+(defn board-actions [auth id]
+  (request auth :get (format "/boards/%s/actions" id)))
+
+(defn board-cards [auth id]
+  (request auth :get (format "/boards/%s/cards" id)))
+
+(defn board-checklists [auth id]
+  (request auth :get (format "/boards/%s/checklists" id)))
+
+(defn board-lists [auth id]
+  (request auth :get (format "/boards/%s/lists" id)))
+
+(defn board-members [auth id]
+  (request auth :get (format "/boards/%s/members" id)))
+
+(defn board-memberships [auth id]
+  (request auth :get (format "/boards/%s/memberships" id)))
+
+(defn board-organization [auth id]
+  (request auth :get (format "/boards/%s/organization" id)))
+
+;; ************************************************************
+;; Cards
+;; ************************************************************
+
+(defn get-card [auth id]
+  (request auth :get (format "/cards/%s" id)))
+
 
