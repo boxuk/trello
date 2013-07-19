@@ -1,6 +1,6 @@
 (ns ^{:doc "The client namespace contains the raw HTTP functions for accessing
             and parsing the responses from the Trello API."}
-  trello.client
+  trello.core
   (:require [clj-http.client :as client]
             [cheshire.core :as json]
             [clojure.string :as string]))
@@ -99,4 +99,19 @@
 (defn get-card [auth id]
   (request auth :get (format "/cards/%s" id)))
 
+;; ************************************************************
+;; Members
+;; ************************************************************
+
+(defn me
+  "Return the Trello profile for the current user"
+  [auth]
+  (request auth :get "/members/me"))
+
+;; ************************************************************
+;; Command line client
+;; ************************************************************
+
+(defn -main [& args]
+  (println "Running client"))
 
