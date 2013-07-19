@@ -60,8 +60,3 @@
 ;; End HTTP utils
 ;; ************************************************************
 
-;; Members
-(defn me "/members/me")
-
-(defn test []
-  (request (auth-map-from-settings) :get "members/my/boards/all"))
