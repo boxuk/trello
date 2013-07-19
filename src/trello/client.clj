@@ -5,92 +5,63 @@
             [cheshire.core :as json]
             [clojure.string :as string]))
 
-(def base-url "api.trello.com/1/")
+;; Basic stuff
+;; **********************************************************
 
-(def authorize-url "https://trello.com/1/authorize")
+(def +base-url+ (atom "https://api.trello.com/1"))
+
+(def +authorize-url+ (atom "https://trello.com/1/authorize"))
+
+(defn full-url [endpoint]
+  (str @+base-url+ endpoint))
 
 (defn settings [f]
   (binding [*read-eval* false]
     (with-open [r (clojure.java.io/reader f)]
       (read (java.io.PushbackReader. r)))))
 
-(defn get-env-var [v]
-  (get (System/getenv) v))
+(defn string->json [^String json-string]
+  (json/parse-string json-string true))
 
-(def ^:dynamic *auth-key* (get-env-var "TRELLO_KEY"))
+;; HTTP requests
+;; **********************************************************
 
-(def ^:dynamic *auth-token* (get-env-var "TRELLO_TOKEN"))
+(defn request-builder
+  "Generic request builder that deals with JSON or HTML requests"
+  [auth method url params]
+  (let [auth-params {:key (:key auth) :token (:token auth)}
+        query-params (merge auth-params params)]
+    { :method method
+      :query-params query-params
+      :url url } ))
 
-(def ^:dynamic *protocol* (atom "http"))
+(defn request
+  "All API requests pass through this function"
+  [auth method url & params]
+  (let [url-full (full-url url)]
+    (when (every? true? (map (partial contains? auth) [:key :token]))
+      (let [builder (request-builder auth method url-full params)]
+        (try
+          (->> (client/request builder)
+               :body
+               string->json)
+        (catch Exception e
+          (json/generate-string
+            {:error (.toString e)}
+            {:escape-non-ascii true})))))))
 
-(defmacro with-https
-  {:doc "Make a HTTP request using https"}
-  [& body]
-  `(binding [*protocol* (atom "https")]
-     (do ~@body)))
+(def select-values (comp vals select-keys))
 
-(defn- normalize-request
-  "Given a request that starts with a forward slash, strip the
-   slash to normalize the request string"
-  [request-string]
-  (if (.startsWith request-string "/")
-    (subs request-string 1)
-    request-string))
+(defn auth-map-from-settings []
+  (let [config (into (sorted-map) (settings "config.clj"))]
+    (when-let [[token key] (select-values config [:key :token])]
+      {:key key :token token})))
 
-(defn- collapse-csv
-  "Collapse sequential values to a CSV"
-  [[k v]]
-  (vector k
-    (if (vector? v)
-      (string/join "," v)
-      v)))
+;; End HTTP utils
+;; ************************************************************
 
-(defn- generate-params
-  "Creates the API parameters part of the query string"
-  [params]
-  (apply str
-    (for [[k v] (map collapse-csv params)]
-      (str "&" (name k) "=" v))))
+;; Members
+(defn me "/members/me")
 
-(defn- generate-url
-  "Creates an absolute API URL with authentication tokens, and extra
-  parameters for each endpoint"
-  [request key token & [params]]
-  (with-https
-    (str @*protocol* "://" base-url request
-       (format "?key=%s&token=%s" key token)
-       (generate-params params))))
-
-(defn make-api-request
-  "Make a request to the Trello API and return a response map"
-  [method query key token & [params]]
-  (let [url (generate-url query key token params)
-        req {:url url :method method}]
-    (json/parse-string
-      (get (client/request req) :body)
-        true)))
-
-(defn api-request
-  [method q & params]
-  (if (and (nil? *auth-key*) (nil? *auth-token*))
-    (print "Please set your auth key and token before making a request")
-    (try
-      (make-api-request method q *auth-key* *auth-token* (first params))
-    (catch Exception e
-      (if (boolean (re-find #"404" (.getMessage e)))
-        (prn (format "404. Could not find %s" q))
-        (throw e))))))
-
-;; Authentication
-
-(defmacro with-auth [k token & body]
-  `(binding [*auth-key* ~k *auth-token* ~token]
-     (do ~@body)))
-
-(defn auth-inspect [settings]
-  ((juxt :key :token) settings))
-
-(defmacro auth! [settings & body]
-  `(with-auth (:key ~settings) (:token ~settings)
-     (do ~@body)))
-
+(defn test []
+  (request (auth-map-from-settings) :get "members/my/boards/all"))

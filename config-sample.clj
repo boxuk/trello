@@ -1,3 +1,4 @@
-{:key "" 
- :token ""
- :secret ""}
+{
+  :key ""
+  :token ""
+}

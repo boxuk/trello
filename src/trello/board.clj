@@ -2,9 +2,10 @@
   (refer-clojure :exclude [get])
   (:use [trello.client :as client]))
 
-(defn all []
-  (client/api-request :get
-    "Members/my/boards/all"))
+(def board-urls
+  {:all "/members/me/boards"})
+
+(defn all [] (client/request :get (full-url (:all board-urls))))
 
 (defn get
   "Get Trello boards
