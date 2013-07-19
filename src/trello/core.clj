@@ -40,7 +40,7 @@
   [auth method url & params]
   (let [url-full (full-url url)]
     (when (every? true? (map (partial contains? auth) [:key :token]))
-      (let [builder (request-builder auth method url-full params)]
+      (let [builder (request-builder auth method url-full (or (first params) {}))]
         (try
           (->> (client/request builder)
                :body
@@ -91,6 +91,15 @@
 
 (defn board-organization [auth id]
   (request auth :get (format "/boards/%s/organization" id)))
+
+(defn board-create
+  "Create a new Trello board. Name is required"
+  [auth attributes]
+  (when (contains? attributes :name)
+    (request auth :post "/boards" attributes)))
+
+(comment
+  (board-create {:key "" :token ""} {:name "new trello board"}))
 
 ;; ************************************************************
 ;; Cards
