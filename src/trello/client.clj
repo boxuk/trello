@@ -14,7 +14,7 @@
     (with-open [r (clojure.java.io/reader f)]
       (read (java.io.PushbackReader. r)))))
 
-(defn get-env-var [v] 
+(defn get-env-var [v]
   (get (System/getenv) v))
 
 (def ^:dynamic *auth-key* (get-env-var "TRELLO_KEY"))
@@ -40,16 +40,16 @@
 (defn- collapse-csv
   "Collapse sequential values to a CSV"
   [[k v]]
-  (vector k 
-    (if (vector? v) 
-      (string/join "," v) 
+  (vector k
+    (if (vector? v)
+      (string/join "," v)
       v)))
 
 (defn- generate-params
   "Creates the API parameters part of the query string"
   [params]
-  (apply str 
-    (for [[k v] (map collapse-csv params)] 
+  (apply str
+    (for [[k v] (map collapse-csv params)]
       (str "&" (name k) "=" v))))
 
 (defn- generate-url
@@ -61,16 +61,16 @@
        (format "?key=%s&token=%s" key token)
        (generate-params params))))
 
-(defn make-api-request 
+(defn make-api-request
   "Make a request to the Trello API and return a response map"
   [method query key token & [params]]
   (let [url (generate-url query key token params)
         req {:url url :method method}]
-    (json/parse-string 
+    (json/parse-string
       (get (client/request req) :body)
         true)))
 
-(defn api-request 
+(defn api-request
   [method q & params]
   (if (and (nil? *auth-key*) (nil? *auth-token*))
     (print "Please set your auth key and token before making a request")
@@ -81,17 +81,16 @@
         (prn (format "404. Could not find %s" q))
         (throw e))))))
 
-;; Authentication 
+;; Authentication
 
 (defmacro with-auth [k token & body]
   `(binding [*auth-key* ~k *auth-token* ~token]
      (do ~@body)))
 
-(defn auth-inspect [settings] 
+(defn auth-inspect [settings]
   ((juxt :key :token) settings))
 
 (defmacro auth! [settings & body]
   `(with-auth (:key ~settings) (:token ~settings)
      (do ~@body)))
 
-    
