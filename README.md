@@ -9,7 +9,7 @@ To generate your api key and api token visit: https://trello.com/1/appKey/genera
 Trello is available from Clojars.org. To use it, add the following as a dependency in Leiningen.
 
 ```clojure
-[trello "0.1.1-SNAPSHOT"]
+[trello "0.1.2-SNAPSHOT"]
 ```
 
 # Authentication
