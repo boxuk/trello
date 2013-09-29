@@ -68,6 +68,16 @@
 (defn board-all [auth]
   (request auth :get "/members/me/boards"))
 
+(defn active-boards 
+  "Returns only active Trello boards"
+  [auth]
+  (->> (board-all auth)
+       (filter #(= (:closed %) false))))
+
+(def active-board-names 
+  "Returns the names of all active Trello boards"
+  (comp (partial map :name) active-boards))
+ 
 (defn board-get [auth id]
   (request auth :get (format "/boards/%s" id)))
 

@@ -24,9 +24,21 @@ https://trello.com/1/authorize?key=YOURKEY&name=My+Application&expiration=1day&r
 (ns trello.examples
   (:require [trello.core]))
 
-(def auth (auth-map-from-settings))
+(def auth 
+  {:key "YOURKEY"
+   :token "YOURAUTHTOKEN"})
 
 (def all-boards (board-all auth))
+```
+
+Fetch a list of active Trello boards
+
+```clojure
+(def auth {:key "mykey" :secret "mysecret"})
+
+(board-names auth)
+
+;; => ("Barnaby Edwards" "Business" "Gather Requirements (product backlog)" "General" "Programming/Study")
 ```
 
 ## License
