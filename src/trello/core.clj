@@ -62,16 +62,16 @@
 ;; ************************************************************
 
 (comment
-  (def auth (auth-map-from-settings))
+  (def auth (auth-map-from-settings))g
     (board-all auth))
 
-(defn board-all [auth]
+(defn boards [auth]
   (request auth :get "/members/me/boards"))
 
 (defn active-boards 
   "Returns only active Trello boards"
   [auth]
-  (->> (board-all auth)
+  (->> (boards auth)
        (filter #(= (:closed %) false))))
 
 (def active-board-names 

@@ -20,23 +20,37 @@ https://trello.com/1/authorize?key=YOURKEY&name=My+Application&expiration=1day&r
 
 ## Examples
 
-```
-(ns trello.examples
-  (:require [trello.core]))
+The first things you'll need to do are to fetch an API key and auth token
+
+```clojure
+(require [trello.core :as trello])
 
 (def auth 
   {:key "YOURKEY"
    :token "YOURAUTHTOKEN"})
 
-(def all-boards (board-all auth))
+```
+
+Listing all boards
+
+```clojure
+
+(def auth 
+  {:key "YOURKEY"
+   :token "YOURAUTHTOKEN"})
+   
+(def all-boards (trello/boards auth))
+
+(doseq [board all-boards]
+  (println (:name board)))
+  
 ```
 
 Fetch a list of active Trello boards
 
 ```clojure
-(def auth {:key "mykey" :secret "mysecret"})
 
-(board-names auth)
+(trello/active-board-names auth)
 
 ;; => ("Barnaby Edwards" "Business" "Gather Requirements (product backlog)" "General" "Programming/Study")
 ```
