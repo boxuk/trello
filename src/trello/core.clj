@@ -84,7 +84,7 @@
   ([key oauth-token]
     (boards (format-auth key oauth-token))))
 
-(def m-boards (memoize-boards))
+(def m-boards (memoize boards))
 
 (comment
   (boards "YOURKEY" "YOURTOKEN"))
@@ -104,6 +104,21 @@
   (->> (boards auth)
        (filter #(= (:closed %) false))))
 
+(defn board-name-id [auth]
+  (->> (boards auth)
+       (map #((juxt :name :id) %))))
+
+(defn get-board-by-name 
+  "Fetch a single board by name. Case sensitive"
+  [auth name]
+  (let [boards (m-boards auth)]
+    (first
+      (reduce (fn [acc board]
+                (if-let [b-name (:name board)]
+                  (if (= b-name name) 
+                    (conj acc board)
+                      acc))) [] boards))))
+
 (def active-board-names 
   "Returns the names of all active Trello boards"
   (comp (partial map :name) active-boards))
@@ -111,23 +126,31 @@
 (defn board-actions [auth id]
   (->>request auth :get (format "boards/%s/actions" id)))
 
-(defn board-cards [auth id]
-  (->>request auth :get (format "boards/%s/cards" id)))
+(defn board-cards 
+  "Fetch all cards for a given board"
+  [auth id]
+  (->>request auth :get 
+    (format "boards/%s/cards" id)))
 
 (defn board-checklists [auth id]
-  (->>request auth :get (format "boards/%s/checklists" id)))
+  (->>request auth :get 
+    (format "boards/%s/checklists" id)))
 
 (defn board-lists [auth id]
-  (->>request auth :get (format "boards/%s/lists" id)))
+  (->>request auth :get 
+    (format "boards/%s/lists" id)))
 
 (defn board-members [auth id]
-  (->>request auth :get (format "boards/%s/members" id)))
+  (->>request auth :get 
+    (format "boards/%s/members" id)))
 
 (defn board-memberships [auth id]
-  (->>request auth :get (format "boards/%s/memberships" id)))
+  (->>request auth :get 
+    (format "boards/%s/memberships" id)))
 
 (defn board-organization [auth id]
-  (->>request auth :get (format "boards/%s/organization" id)))
+  (->>request auth :get 
+    (format "boards/%s/organization" id)))
 
 (defn board-create
   "Create a new Trello board. Name is required"
