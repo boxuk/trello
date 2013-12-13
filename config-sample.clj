@@ -1,4 +1,4 @@
 {
-  :key ""
-  :token ""
+  :key "YOURKEY"
+  :token "YOURTOKEN"
 }
