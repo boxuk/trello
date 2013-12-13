@@ -62,7 +62,7 @@
 ;; ************************************************************
 
 (comment
-  (def auth (auth-map-from-settings))g
+  (def auth (auth-map-from-settings))
     (board-all auth))
 
 (defn boards [auth]
