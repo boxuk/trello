@@ -14,7 +14,9 @@ Trello is available from Clojars.org. To use it, add the following as a dependen
 
 # Authentication
 
-This library does NOT implement OAuth. You'll need to get an access token from Trello. To do this you can use the following URL
+This library does NOT implement OAuth.
+
+You'll need to get an access token from Trello. To do this you can use the following URL
 
 https://trello.com/1/authorize?key=YOURKEY&name=My+Application&expiration=1day&response_type=token&scope=read,write
 
@@ -54,6 +56,10 @@ Fetch a list of active Trello boards
 
 ;; => ("Barnaby Edwards" "Business" "Gather Requirements (product backlog)" "General" "Programming/Study")
 ```
+
+## General notes
+
++ A memoized request can be produced by using the m- version of a function. I.e m-boards
 
 ## License
 

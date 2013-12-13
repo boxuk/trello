@@ -41,15 +41,22 @@
      :query-params query-params
      :url url}))
 
+(defmacro with-exception-handling 
+  "A helper macro for performing request with a try catch"
+  [msg & forms]
+  `(try (do ~@forms)
+     (catch Exception ex# 
+       {:error ~msg})))
+
 (defn ->>request
   "All API requests pass through this function"
   [auth method url & params]
   (let [url-full (full-url url)
         builder (request-builder auth method url-full (into {} params))]
-  (try
-    (->> (client/request builder) :body)
-    (catch Exception _
-      {:error "Bad request. Check your auth token"}))))
+   (with-exception-handling "Bad request"
+     (->> (client/request builder) :body))))
+
+(def memo-request (memoize ->>request))
 
 (def select-values (comp vals select-keys))
 
@@ -77,6 +84,8 @@
   ([key oauth-token]
     (boards (format-auth key oauth-token))))
 
+(def m-boards (memoize-boards))
+
 (comment
   (boards "YOURKEY" "YOURTOKEN"))
 
@@ -86,6 +95,8 @@
     (->>request auth :get (format "boards/%s" board-identifier)))
   ([key oauth-token board-identifier]
    (board (format-auth key oauth-token) board-identifier)))
+
+(def m-board (memoize board))
 
 (defn active-boards 
   "Returns only active Trello boards"
