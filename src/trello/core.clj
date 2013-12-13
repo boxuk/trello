@@ -8,65 +8,84 @@
 ;; Basic stuff
 ;; **********************************************************
 
-(def +base-url+ (atom "https://api.trello.com/1"))
+(defonce +base-url+ (atom "https://api.trello.com/1/"))
 
-(def +authorize-url+ (atom "https://trello.com/1/authorize"))
+(defonce +authorize-url+ (atom "https://trello.com/1/authorize"))
 
 (defn full-url [endpoint]
-  (str @+base-url+ endpoint))
+  (let [parts [@+base-url+ endpoint]]
+    (apply str parts)))
 
-(defn settings [f]
+(defn settings 
+  "Extract auth settings from a config.clj file"
+  [f]
   (binding [*read-eval* false]
     (with-open [r (clojure.java.io/reader f)]
       (read (java.io.PushbackReader. r)))))
 
-(defn string->json [^String json-string]
+(defn string->json 
+  "Parse a string to JSON"
+  [json-string]  
   (json/parse-string json-string true))
 
 ;; HTTP requests
 ;; **********************************************************
 
-(defn request-builder
-  "Generic request builder that deals with JSON or HTML requests"
-  [auth method url params]
-  (let [auth-params {:key (:key auth) :token (:token auth)}
-        query-params (merge auth-params params)]
-    { :method method
-      :query-params query-params
-      :url url } ))
+(defn request-builder 
+  "Builds a request to be executed by a HTTP client"
+  [auth method url & params]
+  (let [query-params (merge auth (into {} params))]
+    (assert (keyword? method))
+    {:method method
+     :as :json
+     :query-params query-params
+     :url url}))
 
-(defn request
+(defn ->>request
   "All API requests pass through this function"
   [auth method url & params]
-  (let [url-full (full-url url)]
-    (when (every? true? (map (partial contains? auth) [:key :token]))
-      (let [builder (request-builder auth method url-full (or (first params) {}))]
-        (try
-          (->> (client/request builder)
-               :body
-               string->json)
-        (catch Exception e
-          (json/generate-string
-            {:error (.toString e)}
-            {:escape-non-ascii true})))))))
+  (let [url-full (full-url url)
+        builder (request-builder auth method url-full (into {} params))]
+  (try
+    (->> (client/request builder) :body)
+    (catch Exception _
+      {:error "Bad request. Check your auth token"}))))
 
 (def select-values (comp vals select-keys))
 
-(defn auth-map-from-settings []
+(defn auth-map-from-settings
+  "Reads in auth info from config.clj"
+  []
   (let [config (into (sorted-map) (settings "config.clj"))]
     (when-let [[token key] (select-values config [:key :token])]
       {:key key :token token})))
+
+(defn format-auth 
+  "Helper for fns where a user wants to explicitly pass a key and token
+   rather than using the auth map"
+  [key oauth-token]
+  {:key key :token oauth-token})
 
 ;; ************************************************************
 ;; BOARDS
 ;; ************************************************************
 
-(comment
-  (def auth (auth-map-from-settings))
-    (board-all auth))
+(defn boards 
+  "Fetches all Trello boards for a user"
+  ([auth]
+     (->>request auth :get "members/me/boards"))
+  ([key oauth-token]
+    (boards (format-auth key oauth-token))))
 
-(defn boards [auth]
-  (request auth :get "/members/me/boards"))
+(comment
+  (boards "YOURKEY" "YOURTOKEN"))
+
+(defn board
+  "Fetch a single Trello board"
+  ([auth board-identifier]
+    (->>request auth :get (format "boards/%s" board-identifier)))
+  ([key oauth-token board-identifier]
+   (board (format-auth key oauth-token) board-identifier)))
 
 (defn active-boards 
   "Returns only active Trello boards"
@@ -78,35 +97,32 @@
   "Returns the names of all active Trello boards"
   (comp (partial map :name) active-boards))
  
-(defn board-get [auth id]
-  (request auth :get (format "/boards/%s" id)))
-
 (defn board-actions [auth id]
-  (request auth :get (format "/boards/%s/actions" id)))
+  (->>request auth :get (format "boards/%s/actions" id)))
 
 (defn board-cards [auth id]
-  (request auth :get (format "/boards/%s/cards" id)))
+  (->>request auth :get (format "boards/%s/cards" id)))
 
 (defn board-checklists [auth id]
-  (request auth :get (format "/boards/%s/checklists" id)))
+  (->>request auth :get (format "boards/%s/checklists" id)))
 
 (defn board-lists [auth id]
-  (request auth :get (format "/boards/%s/lists" id)))
+  (->>request auth :get (format "boards/%s/lists" id)))
 
 (defn board-members [auth id]
-  (request auth :get (format "/boards/%s/members" id)))
+  (->>request auth :get (format "boards/%s/members" id)))
 
 (defn board-memberships [auth id]
-  (request auth :get (format "/boards/%s/memberships" id)))
+  (->>request auth :get (format "boards/%s/memberships" id)))
 
 (defn board-organization [auth id]
-  (request auth :get (format "/boards/%s/organization" id)))
+  (->>request auth :get (format "boards/%s/organization" id)))
 
 (defn board-create
   "Create a new Trello board. Name is required"
   [auth attributes]
   (when (contains? attributes :name)
-    (request auth :post "/boards" attributes)))
+    (->>request auth :post "boards" attributes)))
 
 (comment
   (board-create {:key "" :token ""} {:name "new trello board"}))
@@ -116,7 +132,7 @@
 ;; ************************************************************
 
 (defn get-card [auth id]
-  (request auth :get (format "/cards/%s" id)))
+  (->>request auth :get (format "cards/%s" id)))
 
 ;; ************************************************************
 ;; Members
@@ -125,12 +141,13 @@
 (defn me
   "Return the Trello profile for the current user"
   [auth]
-  (request auth :get "/members/me"))
+  (->>request auth :get "members/me"))
 
 ;; ************************************************************
 ;; Command line client
 ;; ************************************************************
 
-(defn -main [& args]
+(defn -main 
+  [& args]
   (println "Running client"))
 
