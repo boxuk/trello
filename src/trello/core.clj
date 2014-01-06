@@ -12,7 +12,17 @@
 
 (defonce +authorize-url+ (atom "https://trello.com/1/authorize"))
 
-(defn full-url [endpoint]
+(defn authorize! 
+  "Fetch the OAuth URL we need to get our token"
+  [token]
+  (let [base "https://trello.com/1/authorize"
+        params "%s?key=%s&name=My+Application&expiration=never&response_type=token&scope=read,write"
+        url (format params base token)]
+    url))
+
+(defn full-url 
+  "Get the full api url given an endpoint"
+  [endpoint]
   (let [parts [@+base-url+ endpoint]]
     (apply str parts)))
 
@@ -176,12 +186,4 @@
   "Return the Trello profile for the current user"
   [auth]
   (->>request auth :get "members/me"))
-
-;; ************************************************************
-;; Command line client
-;; ************************************************************
-
-(defn -main 
-  [& args]
-  (println "Running client"))
 

@@ -18,7 +18,7 @@ This library does NOT implement OAuth.
 
 You'll need to get an access token from Trello. To do this you can use the following URL
 
-https://trello.com/1/authorize?key=YOURKEY&name=My+Application&expiration=1day&response_type=token&scope=read,write
+https://trello.com/1/authorize?key=YOURKEY&name=My+Application&expiration=never&response_type=token&scope=read,write
 
 ## Examples
 
@@ -30,7 +30,6 @@ The first things you'll need to do are to fetch an API key and auth token
 (def auth 
   {:key "YOURKEY"
    :token "YOURAUTHTOKEN"})
-
 ```
 
 Listing all boards
@@ -55,6 +54,26 @@ Fetch a list of active Trello boards
 (trello/active-board-names auth)
 
 ;; => ("Barnaby Edwards" "Business" "Gather Requirements (product backlog)" "General" "Programming/Study")
+```
+
+## CLI
+
+You can run this as a command line app using Lein. The CLI requires a file called config.clj to be
+set in the root directory with the following info
+
+config.clj
+
+```clojure
+{
+  :key "YOURKEY"
+  :token "YOURTOKEN"
+}
+```
+
+Show all your Trello boards
+
+```
+lein run boards
 ```
 
 ## General notes
