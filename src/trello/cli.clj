@@ -21,9 +21,7 @@
 ;; ************************************************************
 
 (def cli-options
-  [;; First three strings describe a short-option, long-option with optional
-   ;; example argument description, and a description. All three ar
-   ["-k" "--key KEY" "Trello Key"]
+  [["-k" "--key KEY" "Trello Key"]
    ["-t" "--token TOKEN" "Trello Token"]])
 
 (defn error-msg [errors]
