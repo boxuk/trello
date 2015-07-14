@@ -1,3 +1,7 @@
+## This repository is no longer maintained
+
+**We recommend [this fork](https://github.com/bsima/trello) instead.**
+
 # Trello
 
 Clojure wrapper for the Trello API.
